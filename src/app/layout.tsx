@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 import { Recursive } from 'next/font/google'
 import './globals.css'
-// import { Toaster } from '@/components/ui/toaster'
-
-// import "@uploadthing/react/styles.css";
+import "@uploadthing/react/styles.css";
 import Navbar from '@/components/Shared/Navbar';
 import Footer from '@/components/Shared/Footer';
+import { Toaster } from '@/components/ui/toaster';
+import Providers from '@/components/Providers';
 
 
 const recursive = Recursive({ subsets: ['latin'] })
@@ -21,13 +21,13 @@ export default function RootLayout({
         <Navbar />
 
         <main className='flex grainy-light flex-col min-h-[calc(100vh-3.5rem-1px)]'>
-          <div className='flex-1 flex flex-col h-full'>
-            {children}
-          </div>
+          {/* <div className='flex-1 flex flex-col h-full'> */}
+          <Providers>{children}</Providers>
+          {/* </div> */}
           <Footer />
         </main>
 
-        {/* <Toaster /> */}
+        <Toaster />
       </body>
     </html>
   )
