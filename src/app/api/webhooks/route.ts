@@ -20,7 +20,7 @@ export async function POST(req: Request) {
         );
 
         if (event.type === "checkout.session.completed") {
-            if (event.data.object.customer_details?.email) {
+            if (!event.data.object.customer_details?.email) {
                 throw new Error("Missing user email")
             }
 
@@ -66,7 +66,12 @@ export async function POST(req: Request) {
                     },
                 }
             })
-        }
+
+            const order = await db.order.findUnique({ where: { id: orderId } });
+            if (!order) {
+                throw new Error(`Order with ID ${orderId} not found`);
+            }
+        };
 
         return NextResponse.json({ result: event, ok: true });
     } catch (error) {
