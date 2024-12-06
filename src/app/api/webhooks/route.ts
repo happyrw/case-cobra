@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
 export async function POST(req: Request) {
+
     try {
         const body = await req.text();
         const signature = (await headers()).get("stripe-signature");
@@ -75,8 +76,9 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ result: event, ok: true });
     } catch (error) {
+        console.log(error);
         return NextResponse.json(
-            { message: "Something went wrong", ok: false },
+            { message: `Something went wrong ${error}`, ok: false },
             { status: 500 }
         );
     }
