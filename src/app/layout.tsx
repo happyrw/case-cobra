@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Recursive } from 'next/font/google'
 import './globals.css'
-import "@uploadthing/react/styles.css";
+// import "@uploadthing/react/styles.css";
 import Navbar from '@/components/Shared/Navbar';
 import Footer from '@/components/Shared/Footer';
 import { Toaster } from '@/components/ui/toaster';
