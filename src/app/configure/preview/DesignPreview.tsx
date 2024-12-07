@@ -48,10 +48,11 @@ const DesignPreview = ({ configuration, user }: { configuration: Configuration, 
             if (url) router.push(url)
             else throw new Error('Unable to retrieve payment URL.')
         },
-        onError: () => {
+        onError: (error) => {
+            console.error('Error occurred:', error);
             toast({
                 title: 'Something went wrong',
-                description: 'There was an error on our end. Please try again.',
+                description: `There was an error on our end. Please try again ${error}.`,
                 variant: 'destructive',
             })
         },
