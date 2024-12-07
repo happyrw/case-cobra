@@ -20,22 +20,49 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
     const router = useRouter()
     const { toast } = useToast()
     const { id } = configuration
-    const { user } = useKindeBrowserClient()
+    const { user, isLoading, error } = useKindeBrowserClient()
     const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false)
     console.log("User setting", user);
 
     const [showConfetti, setShowConfetti] = useState<boolean>(false)
+
+    // useEffect(() => {
+    //     const getUser = () => {
+    //         try {
+    //             const user = getUser();
+    //             console.log("User setting", user);
+    //         } catch (error) {
+    //             console.log("Error fetching user", error);
+    //         }
+    //     }
+    //     setShowConfetti(true)
+    // }, [])
+
     useEffect(() => {
-        const getUser = () => {
-            try {
-                const user = getUser();
-                console.log("User setting", user);
-            } catch (error) {
-                console.log("Error fetching user", error);
-            }
+        if (isLoading) {
+            console.log("User is being fetched...");
+            return;
         }
-        setShowConfetti(true)
-    }, [])
+
+        if (error) {
+            console.error("Error fetching user:", error);
+            return;
+        }
+
+        if (user) {
+            console.log("User setting:", user);
+            setShowConfetti(true);
+
+            // Hide confetti after 3 seconds
+            const timer = setTimeout(() => {
+                setShowConfetti(false)
+            }, 3000);
+
+            return () => clearTimeout(timer);  // Cleanup timeout on component unmount
+        } else {
+            console.log("No user found.");
+        }
+    }, [user, isLoading, error]);
 
     const { color, model, finish, material } = configuration
 
