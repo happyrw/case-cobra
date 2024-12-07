@@ -29,6 +29,11 @@ const Page = async ({ searchParams }: { searchParams: SearchParams }) => {
         return notFound()
     }
 
+    if (!user) {
+        // Handle the case where the user is not logged in
+        return <div>You need to be logged in to access this page</div>;
+    }
+
     return <DesignPreview configuration={configuration} user={user} />
 }
 
