@@ -25,7 +25,17 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
     console.log("User setting", user);
 
     const [showConfetti, setShowConfetti] = useState<boolean>(false)
-    useEffect(() => setShowConfetti(true))
+    useEffect(() => {
+        const getUser = () => {
+            try {
+                const user = getUser();
+                console.log("User setting", user);
+            } catch (error) {
+                console.log("Error fetching user", error);
+            }
+        }
+        setShowConfetti(true)
+    }, [])
 
     const { color, model, finish, material } = configuration
 
