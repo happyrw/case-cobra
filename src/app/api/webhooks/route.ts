@@ -1,8 +1,11 @@
 import { db } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
 import { headers } from "next/headers";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+
+import nodemailer from 'nodemailer';
+import OrderReceivedEmail from "@/components/emails/OrderReceivedEmail";
 
 export async function POST(req: Request) {
 
@@ -39,7 +42,7 @@ export async function POST(req: Request) {
             const billingAddress = session.customer_details?.address
             const shippingAddress = session.shipping_details?.address
 
-            await db.order.update({
+            const updatedOrder = await db.order.update({
                 where: {
                     id: orderId
                 },
@@ -72,6 +75,38 @@ export async function POST(req: Request) {
             if (!order) {
                 throw new Error(`Order with ID ${orderId} not found`);
             }
+
+            // Email
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: process.env.APP_EMAIL,
+                    pass: process.env.APP_PASSWORD,
+                },
+            });
+
+            // Define email
+            const userMailOptions = {
+                from: "CaseCobra <hello@happy222004567@gmail.com>",
+                to: [event.data.object.customer_details.email],
+                subject: "Thanks for your order!",
+                react: OrderReceivedEmail({
+                    orderId,
+                    orderDate: updatedOrder.createdAt.toLocaleDateString(),
+                    //@ts-ignore
+                    shippingAddress: {
+                        name: session.customer_details!.name!,
+                        city: shippingAddress!.city!,
+                        country: shippingAddress!.country!,
+                        postalCode: shippingAddress!.postal_code!,
+                        street: shippingAddress!.line1!,
+                        state: shippingAddress!.state,
+                    },
+                })
+            };
+
+            // Send email to the user
+            await transporter.sendMail(userMailOptions);
         };
 
         return NextResponse.json({ result: event, ok: true });

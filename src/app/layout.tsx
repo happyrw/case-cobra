@@ -1,4 +1,3 @@
-import type { Metadata } from 'next'
 import { Recursive } from 'next/font/google'
 import './globals.css'
 // import "@uploadthing/react/styles.css";
@@ -6,9 +5,12 @@ import Navbar from '@/components/Shared/Navbar';
 import Footer from '@/components/Shared/Footer';
 import { Toaster } from '@/components/ui/toaster';
 import Providers from '@/components/Providers';
+import { constructMetadata } from '@/lib/utils';
 
 
 const recursive = Recursive({ subsets: ['latin'] })
+
+export const metadata = constructMetadata();
 
 export default function RootLayout({
   children,
