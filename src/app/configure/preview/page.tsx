@@ -31,7 +31,7 @@ const Page = async ({ searchParams }: { searchParams: SearchParams }) => {
 
     return (
         <div>
-            <div className='bg-red-700/15 text-red-700 p-4'>Logged in user from server side: {user.email}</div>
+            <div className='bg-red-700/15 text-red-700 p-4'>Logged in user from server side: {user?.email}</div>
             <DesignPreview configuration={configuration} />
         </div>
     )
