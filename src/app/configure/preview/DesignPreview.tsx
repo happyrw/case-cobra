@@ -4,7 +4,7 @@ import Phone from '@/components/Shared/Phone'
 import { Button } from '@/components/ui/button'
 import { BASE_PRICE, PRODUCT_PRICES } from '@/config/products'
 import { cn, formatPrice } from '@/lib/utils'
-import { COLORS, MODELS } from '@/validators/option-validator'
+import { COLORS, FINISHES, MODELS } from '@/validators/option-validator'
 import { Configuration } from '@prisma/client'
 import { useMutation } from '@tanstack/react-query'
 import { ArrowRight, Check } from 'lucide-react'
@@ -16,14 +16,14 @@ import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import LoginModal from '@/components/LoginModal'
 import { useToast } from '@/hooks/use-toast'
 
-const DesignPreview = ({ configuration, user }: { configuration: Configuration, user: any }) => {
+const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
     const router = useRouter()
     const { toast } = useToast()
     const { id } = configuration
+    const { user } = useKindeBrowserClient()
     const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false)
 
     const [showConfetti, setShowConfetti] = useState<boolean>(false)
-
     useEffect(() => setShowConfetti(true))
 
     const { color, model, finish, material } = configuration
@@ -39,44 +39,23 @@ const DesignPreview = ({ configuration, user }: { configuration: Configuration, 
         totalPrice += PRODUCT_PRICES.material.polycarbonate
     if (finish === 'textured') totalPrice += PRODUCT_PRICES.finish.textured
 
-    // const { mutate: createPaymentSession } = useMutation({
-    //     mutationKey: ['get-checkout-session'],
-    //     mutationFn: createCheckoutSession,
-    //     onSuccess: ({ url }) => {
-    //         if (url) router.push(url)
-    //         else throw new Error('Unable to retrieve payment URL.')
-    //     },
-    //     onError: (error) => {
-    //         console.error('Error occurred:', error);
-    //         toast({
-    //             title: 'Something went wrong',
-    //             description: `There was an error on our end. Please try again ${error}.`,
-    //             variant: 'destructive',
-    //         })
-    //     },
-    // })
-
     const { mutate: createPaymentSession } = useMutation({
         mutationKey: ['get-checkout-session'],
         mutationFn: createCheckoutSession,
         onSuccess: ({ url }) => {
-            if (url) router.push(url);
-            else throw new Error('Unable to retrieve payment URL.');
+            if (url) router.push(url)
+            else throw new Error('Unable to retrieve payment URL.')
         },
-        onError: (error) => {
-            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-            console.error('Error:', errorMessage);
+        onError: () => {
             toast({
                 title: 'Something went wrong',
-                description: `There was an error on our end. Please try again. ${errorMessage}`,
+                description: 'There was an error on our end. Please try again.',
                 variant: 'destructive',
-            });
+            })
         },
-    });
-
+    })
 
     const handleCheckout = () => {
-        console.log("User status:", user);
         if (user) {
             // create payment session
             createPaymentSession({ configId: id })
@@ -100,18 +79,19 @@ const DesignPreview = ({ configuration, user }: { configuration: Configuration, 
 
             <LoginModal isOpen={isLoginModalOpen} setIsOpen={setIsLoginModalOpen} />
 
-            <div className='mt-20 grid grid-cols-1 text-sm sm:grid-cols-12 sm:grid-rows-1 sm:gap-x-6 md:gap-x-8 lg:gap-x-12'>
-                <div className='sm:col-span-4 md:col-span-3 md:row-span-2 md:row-end-2'>
+            <div className='mt-20 flex flex-col items-center md:grid text-sm sm:grid-cols-12 sm:grid-rows-1 sm:gap-x-6 md:gap-x-8 lg:gap-x-12'>
+                <div className='md:col-span-4 lg:col-span-3 md:row-span-2 md:row-end-2'>
                     <Phone
-                        className={cn(`bg-${tw}`)}
+                        className={cn(`bg-${tw}`, "max-w-[150px] md:max-w-full")}
                         imgSrc={configuration.croppedImageUrl!}
                     />
                 </div>
 
-                <div className='mt-6 sm:col-span-9 sm:mt-0 md:row-end-1'>
+                <div className='mt-6 sm:col-span-9 md:row-end-1'>
                     <h3 className='text-3xl font-bold tracking-tight text-gray-900'>
                         Your {modelLabel} Case
                     </h3>
+                    <div className='bg-red-700/15 text-red-700 p-4'>Logged in user from client side: {user?.email}</div>
                     <div className='mt-3 flex items-center gap-1.5 text-base'>
                         <Check className='h-4 w-4 text-green-500' />
                         In stock and ready to ship
@@ -191,4 +171,4 @@ const DesignPreview = ({ configuration, user }: { configuration: Configuration, 
     )
 }
 
-export default DesignPreview
+export default DesignPreview;

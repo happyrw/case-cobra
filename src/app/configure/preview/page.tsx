@@ -27,14 +27,14 @@ const Page = async ({ searchParams }: { searchParams: SearchParams }) => {
 
     if (!configuration) {
         return notFound()
-    }
+    };
 
-    if (!user) {
-        // Handle the case where the user is not logged in
-        return <div>You need to be logged in to access this page</div>;
-    }
-
-    return <DesignPreview configuration={configuration} user={user} />
+    return (
+        <div>
+            <div className='bg-red-700/15 text-red-700 p-4'>Logged in user from server side: {user.email}</div>
+            <DesignPreview configuration={configuration} />
+        </div>
+    )
 }
 
 export default Page
