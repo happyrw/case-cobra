@@ -4,7 +4,7 @@ import Phone from '@/components/Shared/Phone'
 import { Button } from '@/components/ui/button'
 import { BASE_PRICE, PRODUCT_PRICES } from '@/config/products'
 import { cn, formatPrice } from '@/lib/utils'
-import { COLORS, FINISHES, MODELS } from '@/validators/option-validator'
+import { COLORS, MODELS } from '@/validators/option-validator'
 import { Configuration } from '@prisma/client'
 import { useMutation } from '@tanstack/react-query'
 import { ArrowRight, Check } from 'lucide-react'
@@ -16,53 +16,17 @@ import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import LoginModal from '@/components/LoginModal'
 import { useToast } from '@/hooks/use-toast'
 
-const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
+const DesignPreview = ({ configuration, user }: { configuration: Configuration, user: any }) => {
     const router = useRouter()
     const { toast } = useToast()
     const { id } = configuration
-    const { user, isLoading, error } = useKindeBrowserClient()
+    // const { user } = useKindeBrowserClient()
     const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false)
-    console.log("User setting", user);
+    // console.log("User setting", user);
 
     const [showConfetti, setShowConfetti] = useState<boolean>(false)
 
-    // useEffect(() => {
-    //     const getUser = () => {
-    //         try {
-    //             const user = getUser();
-    //             console.log("User setting", user);
-    //         } catch (error) {
-    //             console.log("Error fetching user", error);
-    //         }
-    //     }
-    //     setShowConfetti(true)
-    // }, [])
-
-    useEffect(() => {
-        if (isLoading) {
-            console.log("User is being fetched...");
-            return;
-        }
-
-        if (error) {
-            console.log("Error fetching user:", error);
-            return;
-        }
-
-        if (user) {
-            console.log("User setting:", user);
-            setShowConfetti(true);
-
-            // Hide confetti after 3 seconds
-            const timer = setTimeout(() => {
-                setShowConfetti(false)
-            }, 3000);
-
-            return () => clearTimeout(timer);  // Cleanup timeout on component unmount
-        } else {
-            console.log("No user found.");
-        }
-    }, [user, isLoading, error]);
+    useEffect(() => setShowConfetti(true))
 
     const { color, model, finish, material } = configuration
 
