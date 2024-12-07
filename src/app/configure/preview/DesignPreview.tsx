@@ -20,9 +20,7 @@ const DesignPreview = ({ configuration, user }: { configuration: Configuration, 
     const router = useRouter()
     const { toast } = useToast()
     const { id } = configuration
-    // const { user } = useKindeBrowserClient()
     const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false)
-    // console.log("User setting", user);
 
     const [showConfetti, setShowConfetti] = useState<boolean>(false)
 
@@ -41,22 +39,41 @@ const DesignPreview = ({ configuration, user }: { configuration: Configuration, 
         totalPrice += PRODUCT_PRICES.material.polycarbonate
     if (finish === 'textured') totalPrice += PRODUCT_PRICES.finish.textured
 
+    // const { mutate: createPaymentSession } = useMutation({
+    //     mutationKey: ['get-checkout-session'],
+    //     mutationFn: createCheckoutSession,
+    //     onSuccess: ({ url }) => {
+    //         if (url) router.push(url)
+    //         else throw new Error('Unable to retrieve payment URL.')
+    //     },
+    //     onError: (error) => {
+    //         console.error('Error occurred:', error);
+    //         toast({
+    //             title: 'Something went wrong',
+    //             description: `There was an error on our end. Please try again ${error}.`,
+    //             variant: 'destructive',
+    //         })
+    //     },
+    // })
+
     const { mutate: createPaymentSession } = useMutation({
         mutationKey: ['get-checkout-session'],
         mutationFn: createCheckoutSession,
         onSuccess: ({ url }) => {
-            if (url) router.push(url)
-            else throw new Error('Unable to retrieve payment URL.')
+            if (url) router.push(url);
+            else throw new Error('Unable to retrieve payment URL.');
         },
         onError: (error) => {
-            console.error('Error occurred:', error);
+            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+            console.error('Error:', errorMessage);
             toast({
                 title: 'Something went wrong',
-                description: `There was an error on our end. Please try again ${error}.`,
+                description: `There was an error on our end. Please try again. ${errorMessage}`,
                 variant: 'destructive',
-            })
+            });
         },
-    })
+    });
+
 
     const handleCheckout = () => {
         console.log("User status:", user);
