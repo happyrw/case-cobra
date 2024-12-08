@@ -1,26 +1,24 @@
-// /api/auth/[kindeAuth]/route.ts
-
 import { handleAuth } from '@kinde-oss/kinde-auth-nextjs/server';
 
-// This function will be responsible for handling the CORS headers
+// CORS Handling Middleware
 const setCorsHeaders = (res) => {
-    res.setHeader('Access-Control-Allow-Origin', '*'); // Allow all origins (or set specific origins)
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'); // Methods allowed
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Allowed headers
+    res.setHeader('Access-Control-Allow-Origin', 'https://case-cobra-psi.vercel.app'); // Allow your specific domain
+    res.setHeader('Access-Control-Allow-Credentials', 'true');  // Allow credentials if needed
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS, POST, PUT, DELETE');  // Allowed HTTP methods
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');  // Allowed headers
 };
 
-// GET route handler
+// Main GET handler with CORS
 export const GET = async (req, res) => {
-    // Set CORS headers first
+    // Handle preflight request (OPTIONS)
+    if (req.method === 'OPTIONS') {
+        setCorsHeaders(res);
+        return res.status(200).end();
+    }
+
+    // Set CORS headers for actual request
     setCorsHeaders(res);
 
-    // Handle the actual authentication flow
+    // Call the Kinde Auth handler to manage authentication
     return handleAuth(req, res);
-};
-
-// Handle OPTIONS request (CORS preflight request)
-export const OPTIONS = (req, res) => {
-    // Handle preflight CORS request by setting appropriate headers
-    setCorsHeaders(res);
-    return res.status(200).end(); // Respond with a success status for OPTIONS request
 };
